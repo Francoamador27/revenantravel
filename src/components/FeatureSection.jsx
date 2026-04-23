@@ -82,9 +82,52 @@ function HeroSwiper({ slides, company, contact }) {
   );
 }
 
+function HeroFallback({ company, contact }) {
+  return (
+    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#003366] via-[#00254d] to-[#1a1a2e]">
+      {/* Patrón decorativo de fondo */}
+      <div className="absolute inset-0 opacity-10" style={{
+        backgroundImage: 'radial-gradient(circle at 20% 50%, #dc834e 0%, transparent 50%), radial-gradient(circle at 80% 20%, #dc834e 0%, transparent 40%)',
+      }} />
+
+      <div className="relative z-10 w-full max-w-6xl px-6 lg:px-12 mx-auto text-center">
+        <span className="inline-block mb-6 px-5 py-2 text-sm font-black tracking-wider bg-white/10 backdrop-blur-md text-white rounded-full border border-white/20 thea-amelia">
+          {company?.name || 'RevenantTravel'}
+        </span>
+
+        <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-white mb-8 leading-[1.1] tracking-tight">
+          Experiencias de viaje <span className="text-[#dc834e]">únicas</span>
+        </h1>
+
+        <p className="max-w-2xl mx-auto text-xl md:text-2xl text-white/80 mb-12 font-light leading-relaxed">
+          Descubrí destinos increíbles con nuestro equipo de expertos en turismo.
+        </p>
+
+        <div className="flex flex-wrap justify-center gap-6">
+          <a
+            href={`tel:${contact?.phone || contact?.whatsapp || ''}`}
+            className="px-10 py-5 font-black text-[#003366] bg-white rounded-2xl hover:bg-slate-100 transition-all shadow-xl hover:-translate-y-1 active:scale-95 text-lg"
+          >
+            LLAMAR AHORA
+          </a>
+          <a
+            href={WhatsappHref({ message: 'Hola, me gustaría obtener más información sobre sus servicios de viaje.' })}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-10 py-5 font-black text-white border-2 border-white/60 rounded-2xl hover:bg-white/10 backdrop-blur-sm transition-all text-lg"
+          >
+            WHATSAPP
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function HeroFeatures() {
   const [slides, setSlides] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(false);
   const { company, contact } = useCont();
 
   useEffect(() => {
@@ -98,6 +141,7 @@ export default function HeroFeatures() {
         }
       } catch (error) {
         console.error('Error cargando sliders', error);
+        if (!cancelled) setFetchError(true);
       } finally {
         if (!cancelled) {
           setLoading(false);
@@ -147,12 +191,12 @@ export default function HeroFeatures() {
           font-size: 20px;
           font-weight: bold;
         }
-        
+
         .hero-swiper .swiper-pagination-bullet {
           background: white;
           opacity: 0.5;
         }
-        
+
         .hero-swiper .swiper-pagination-bullet-active {
           background: #003366;
           opacity: 1;
@@ -171,7 +215,9 @@ export default function HeroFeatures() {
         </div>
       ) : slides.length > 0 ? (
         <HeroSwiper slides={slides} company={company} contact={contact} />
-      ) : null}
+      ) : (
+        <HeroFallback company={company} contact={contact} />
+      )}
     </section>
   );
 }

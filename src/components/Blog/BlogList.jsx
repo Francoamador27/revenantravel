@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import useSWR from 'swr';
 import { Link } from 'react-router-dom';
 import clienteAxios from '../../config/axios';
-import { Calendar, Search, Tag, ArrowRight } from 'lucide-react';
+import { Calendar, Search, Tag, ArrowRight, WifiOff, RefreshCw } from 'lucide-react';
 
 export default function BlogList() {
   const [busqueda, setBusqueda] = useState('');
@@ -10,7 +10,7 @@ export default function BlogList() {
 
   const fetcher = (url) => clienteAxios(url).then((res) => res.data);
 
-  const { data: postsData, isLoading } = useSWR('/api/posts', fetcher);
+  const { data: postsData, isLoading, error: postsError, mutate: revalidatePosts } = useSWR('/api/posts', fetcher);
   const { data: categoriasData } = useSWR('/api/posts-categorias', fetcher);
 
   const posts = useMemo(() => {
@@ -198,6 +198,26 @@ export default function BlogList() {
           </div>
         </div>
 
+        {/* Error / Offline */}
+        {!isLoading && postsError && (
+          <div className="text-center py-20">
+            <div className="w-24 h-24 mx-auto mb-6 bg-slate-100 rounded-full flex items-center justify-center">
+              <WifiOff className="w-12 h-12 text-slate-400" />
+            </div>
+            <h3 className="text-2xl font-semibold text-slate-800 mb-2">Sin conexión al servidor</h3>
+            <p className="text-slate-500 mb-6 max-w-sm mx-auto">
+              No pudimos cargar los artículos. Verificá tu conexión o intentá nuevamente en unos instantes.
+            </p>
+            <button
+              onClick={() => revalidatePosts()}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-xl transition-all duration-200"
+            >
+              <RefreshCw size={16} />
+              Reintentar
+            </button>
+          </div>
+        )}
+
         {/* Loading */}
         {isLoading && (
           <div className="text-center py-20">
@@ -207,7 +227,7 @@ export default function BlogList() {
         )}
 
         {/* Grid de Posts */}
-        {!isLoading && postsFiltrados.length > 0 && (
+        {!isLoading && !postsError && postsFiltrados.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {postsFiltrados.map((post, idx) => (
               <PostCard key={post.id} post={post} idx={idx} />
@@ -216,7 +236,7 @@ export default function BlogList() {
         )}
 
         {/* Sin resultados */}
-        {!isLoading && postsFiltrados.length === 0 && (
+        {!isLoading && !postsError && postsFiltrados.length === 0 && (
           <div className="text-center py-20">
             <div className="w-24 h-24 mx-auto mb-6 bg-slate-100 rounded-full flex items-center justify-center">
               <Search className="w-12 h-12 text-slate-400" />

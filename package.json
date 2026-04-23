@@ -60,7 +60,7 @@
     "react-toastify": "^11.0.5",
     "reactflow": "^11.11.4",
     "sweetalert2": "^11.21.0",
-    "swiper": "^10.3.1",
+    "swiper": "^12.1.2",
     "swr": "^2.3.3",
     "tailwindcss": "^4.1.4",
     "uuid": "^11.1.0",

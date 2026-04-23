@@ -2,7 +2,7 @@ import React from 'react';
 import useSWR from 'swr';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import clienteAxios from '../../config/axios';
-import { Calendar, User, Tag, ArrowLeft, Share2, Clock } from 'lucide-react';
+import { Calendar, User, Tag, ArrowLeft, Share2, Clock, WifiOff, RefreshCw } from 'lucide-react';
 
 export default function BlogDetail() {
   const { slug } = useParams();
@@ -10,7 +10,7 @@ export default function BlogDetail() {
 
   const fetcher = (url) => clienteAxios(url).then((res) => res.data);
 
-  const { data, isLoading, error } = useSWR(`/api/posts/${slug}`, fetcher);
+  const { data, isLoading, error, mutate: revalidate } = useSWR(`/api/posts/${slug}`, fetcher);
 
   const post = data?.data || data;
 
@@ -90,10 +90,68 @@ export default function BlogDetail() {
     );
   }
 
-  if (error || !post) {
+  if (error) {
+    const isNetworkError = !error.response;
+    const is404 = error.response?.status === 404;
+
+    if (isNetworkError) {
+      return (
+        <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
+          <div className="text-center max-w-md px-6">
+            <div className="w-24 h-24 mx-auto mb-6 bg-slate-100 rounded-full flex items-center justify-center">
+              <WifiOff className="w-12 h-12 text-slate-400" />
+            </div>
+            <h2 className="text-3xl font-bold text-slate-800 mb-4">Sin conexión</h2>
+            <p className="text-slate-600 mb-8">
+              No pudimos cargar este artículo. Verificá tu conexión e intentá nuevamente.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button
+                onClick={() => revalidate()}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#dc834e] hover:bg-[#c77542] text-white font-semibold rounded-xl transition-all duration-200"
+              >
+                <RefreshCw size={18} />
+                Reintentar
+              </button>
+              <Link
+                to="/blog"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold rounded-xl transition-all duration-200"
+              >
+                <ArrowLeft size={18} />
+                Volver al blog
+              </Link>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
-        <div className="text-center max-w-md">
+        <div className="text-center max-w-md px-6">
+          <div className="w-24 h-24 mx-auto mb-6 bg-red-100 rounded-full flex items-center justify-center">
+            <span className="text-5xl">😞</span>
+          </div>
+          <h2 className="text-3xl font-bold text-slate-800 mb-4">Artículo no encontrado</h2>
+          <p className="text-slate-600 mb-8">
+            El artículo que buscas no existe o ha sido eliminado.
+          </p>
+          <Link
+            to="/blog"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#dc834e] hover:bg-[#c77542] text-white font-semibold rounded-xl transition-all duration-200"
+          >
+            <ArrowLeft size={20} />
+            Volver al blog
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!post) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
+        <div className="text-center max-w-md px-6">
           <div className="w-24 h-24 mx-auto mb-6 bg-red-100 rounded-full flex items-center justify-center">
             <span className="text-5xl">😞</span>
           </div>
