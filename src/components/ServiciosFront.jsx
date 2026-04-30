@@ -26,9 +26,9 @@ export default function ServiciosSwiper() {
     "/api/servicios?sort=position&dir=asc&per_page=1000",
     fetcher,
     {
-    revalidateOnFocus: false,
-    keepPreviousData: true,
-    }
+      revalidateOnFocus: false,
+      keepPreviousData: true,
+    },
   );
 
   useEffect(() => {
@@ -36,8 +36,8 @@ export default function ServiciosSwiper() {
     const items = Array.isArray(data?.data)
       ? data.data
       : Array.isArray(data)
-      ? data
-      : [];
+        ? data
+        : [];
     setServiciosApi(items);
   }, [data]);
 
@@ -87,7 +87,7 @@ export default function ServiciosSwiper() {
         highlight: "Premium",
       },
     ],
-    []
+    [],
   );
 
   // ---- Datos finales ----
@@ -98,7 +98,9 @@ export default function ServiciosSwiper() {
       titulo: s.titulo ?? s.title ?? "Servicio especializado",
       descripcion: s.descripcion ?? s.description ?? "",
       highlight: s.highlight ?? s.tagline ?? "",
-      slug: s.slug ?? (s.titulo ?? s.title ?? "").toLowerCase().replace(/\s+/g, "-"),
+      slug:
+        s.slug ??
+        (s.titulo ?? s.title ?? "").toLowerCase().replace(/\s+/g, "-"),
       image: s.image ?? null,
     }));
   }, [serviciosApi, serviciosFallback]);
@@ -110,15 +112,15 @@ export default function ServiciosSwiper() {
     setVisibleCards((prev) => {
       const next = new Set(prev);
 
-      const slidesPerView = swiper.params.slidesPerView === 'auto' 
-        ? swiper.slides.length 
-        : (swiper.params.slidesPerView || 1);
-      
+      const slidesPerView =
+        swiper.params.slidesPerView === "auto"
+          ? swiper.slides.length
+          : swiper.params.slidesPerView || 1;
+
       const activeIndex = swiper.activeIndex || 0;
-      const numVisibleSlides = typeof slidesPerView === 'number' 
-        ? Math.ceil(slidesPerView) 
-        : 1;
-      
+      const numVisibleSlides =
+        typeof slidesPerView === "number" ? Math.ceil(slidesPerView) : 1;
+
       for (let i = 0; i < numVisibleSlides; i++) {
         const index = activeIndex + i;
         if (index < swiper.slides.length) {
@@ -190,7 +192,12 @@ export default function ServiciosSwiper() {
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={3}
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
             </div>
           </div>
@@ -229,11 +236,16 @@ export default function ServiciosSwiper() {
           </div>
 
           <h2 className="text-4xl lg:text-5xl font-black  text-slate-900 mb-6 tracking-tight">
-            Le <span className="text-[#dc834e]  text-6xl lg:text-5xl">Paquetes</span>
+            Nuestros{" "}
+            <span className="text-[#dc834e]  text-6xl lg:text-5xl">
+              Paquetes
+            </span>
           </h2>
 
           <p className="text-slate-600 max-w-2xl mx-auto text-xl leading-relaxed font-light">
-            En <strong className="text-[#dc834e]">RevenantTravel</strong> creamos experiencias inolvidables en los destinos más increíbles del mundo.
+            En <strong className="text-[#dc834e]">RevenantTravel</strong>{" "}
+            creamos experiencias inolvidables en los destinos más increíbles del
+            mundo.
           </p>
 
           <div className="mt-10 flex items-center justify-center gap-3">
@@ -295,7 +307,8 @@ export default function ServiciosSwiper() {
               ¿Listo para tu próxima aventura?
             </h4>
             <p className="text-white/90 text-lg mb-10 font-light leading-relaxed max-w-2xl mx-auto">
-              Consultanos por disponibilidad, paquetes personalizados y promociones exclusivas.
+              Consultanos por disponibilidad, paquetes personalizados y
+              promociones exclusivas.
             </p>
 
             <a

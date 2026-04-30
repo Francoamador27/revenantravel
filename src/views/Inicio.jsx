@@ -13,51 +13,46 @@ const Beneficios = lazy(() => import("../components/Beneficios"));
 const Comparacion = lazy(() => import("../components/Comparacion"));
 const Cta = lazy(() => import("../components/Cta"));
 const Inicio = () => {
-    const { auth, company } = useCont();
-    return (
-        <>
-            <div className="  ">
-                <FeatureSection />
-                <LazyRender minHeight={320}>
-                    <Suspense fallback={<div style={{ minHeight: 320 }} />}>
-                        <ComoComprar />
-                    </Suspense>
-                </LazyRender>
-                <LazyRender minHeight={520}>
-                    <Suspense fallback={<div style={{ minHeight: 520 }} />}>
-                        <ServiciosFront sliders />
-                    </Suspense>
-                </LazyRender>
+  const { auth, company } = useCont();
+  return (
+    <>
+      <div className="  ">
+        <FeatureSection />
+        <LazyRender minHeight={320}>
+          <Suspense fallback={<div style={{ minHeight: 320 }} />}>
+            <ComoComprar />
+          </Suspense>
+        </LazyRender>
+        <LazyRender minHeight={520}>
+          <Suspense fallback={<div style={{ minHeight: 520 }} />}>
+            <ServiciosFront sliders />
+          </Suspense>
+        </LazyRender>
 
-                <LazyRender minHeight={520}>
-                    <Suspense fallback={<div style={{ minHeight: 520 }} />}>
-                        <DestinosCarrusel />
-                    </Suspense>
-                </LazyRender>
+        <LazyRender minHeight={520}>
+          <Suspense fallback={<div style={{ minHeight: 520 }} />}>
+            <DestinosCarrusel />
+          </Suspense>
+        </LazyRender>
 
-                <LazyRender minHeight={320}>
-                    <Suspense fallback={<div style={{ minHeight: 320 }} />}>
-                        <Beneficios />
-                    </Suspense>
-                </LazyRender>
+        <LazyRender minHeight={320}>
+          <Suspense fallback={<div style={{ minHeight: 320 }} />}>
+            <Beneficios />
+          </Suspense>
+        </LazyRender>
 
-                <LazyRender minHeight={420}>
-                    <Suspense fallback={<div style={{ minHeight: 420 }} />}>
-                        <Testimonials />
-                    </Suspense>
-                </LazyRender>
-                <LazyRender minHeight={420}>
-                    <Suspense fallback={<div style={{ minHeight: 420 }} />}>
-                        <Contacto />
-                    </Suspense>
-                </LazyRender>
-                <SEOHead
-                    priority="high"
-                    title={`${company.name} | Agencia de turismo`}
-                />
-            </div>
-        </>
-    );
-}
+        <LazyRender minHeight={420}>
+          <Suspense fallback={<div style={{ minHeight: 420 }} />}>
+            <Contacto />
+          </Suspense>
+        </LazyRender>
+        <SEOHead
+          priority="high"
+          title={`${company.name} | Agencia de turismo`}
+        />
+      </div>
+    </>
+  );
+};
 
 export default Inicio;
