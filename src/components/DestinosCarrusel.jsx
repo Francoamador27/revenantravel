@@ -3,11 +3,10 @@ import { Link } from "react-router-dom";
 import useSWR from "swr";
 import clienteAxios from "../config/axios";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Autoplay, EffectCoverflow } from "swiper/modules";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import "swiper/css/effect-coverflow";
 
 export default function DestinosCarrusel() {
   const [categorias, setCategorias] = useState([]);
@@ -89,18 +88,9 @@ export default function DestinosCarrusel() {
         {/* Carrusel */}
         <div className="relative">
           <Swiper
-            modules={[Navigation, Pagination, Autoplay, EffectCoverflow]}
-            effect="coverflow"
-            coverflowEffect={{
-              rotate: 15,
-              stretch: 0,
-              depth: 200,
-              modifier: 1.5,
-              slideShadows: false,
-            }}
-            spaceBetween={30}
+            modules={[Navigation, Pagination, Autoplay]}
+            spaceBetween={24}
             slidesPerView={3}
-            centeredSlides={true}
             loop={true}
             autoplay={{
               delay: 4000,
