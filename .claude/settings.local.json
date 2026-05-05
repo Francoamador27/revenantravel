@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Remove-Item \"c:\\\\Users\\\\Franco\\\\Desktop\\\\PROYECTOS PERSONALES\\\\react\\\\revenantravel\\\\src\\\\components\\\\InstallPWAButton.jsx\" -Force)",
+      "Bash(Remove-Item \"c:\\\\Users\\\\Franco\\\\Desktop\\\\PROYECTOS PERSONALES\\\\react\\\\revenantravel\\\\src\\\\components\\\\IOSInstallHint.jsx\" -Force)",
+      "Bash(Write-Output \"Eliminados\")"
+    ]
+  }
+}

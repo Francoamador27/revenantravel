@@ -9,10 +9,182 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "yet-another-react-lightbox/styles.css";
 import SEOHead from "../Head/Head";
+import useCont from "../../hooks/useCont";
 
 const ACCENT = "#003366";
 const isImageUrl = (url = "") =>
   /\.(jpe?g|png|webp|gif|bmp|svg)(\?.*)?$/i.test(url || "");
+
+const FORM_INITIAL = { nombre: "", apellido: "", email: "", telefono: "" };
+
+function ReservaModal({ open, onClose, paqueteNombre, whatsapp }) {
+  const [form, setForm] = useState(FORM_INITIAL);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  if (!open) return null;
+
+  const handleChange = (e) =>
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSubmitting(true);
+    try {
+      await clienteAxios.post("/api/contacto", {
+        nombre: `${form.nombre} ${form.apellido}`.trim(),
+        email: form.email,
+        telefono: form.telefono,
+        mensaje: `Hola, mi nombre es ${form.nombre} ${form.apellido} y estoy buscando información sobre el paquete "${paqueteNombre}".`,
+      });
+
+      const mensaje = encodeURIComponent(
+        `Hola, mi nombre es ${form.nombre} ${form.apellido}, estoy buscando información sobre "${paqueteNombre}".`,
+      );
+      const phone = (whatsapp || "").replace(/\D/g, "");
+      window.open(
+        `https://api.whatsapp.com/send/?phone=${phone}&text=${mensaje}`,
+        "_blank",
+        "noopener,noreferrer",
+      );
+      onClose();
+      setForm(FORM_INITIAL);
+    } catch {
+      setError("Ocurrió un error al enviar. Por favor intentá de nuevo.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl p-8 animate-fadeInUp"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Cabecera */}
+        <div className="mb-6">
+          <div className="inline-block bg-[#003366] text-white text-[10px] font-black tracking-[0.2em] px-4 py-2 rounded-lg mb-4 uppercase">
+            Reservar paquete
+          </div>
+          <h2 className="text-2xl font-black text-slate-900 leading-tight">
+            {paqueteNombre}
+          </h2>
+          <p className="text-slate-500 text-sm mt-1 font-light">
+            Completá tus datos y te contactamos por WhatsApp.
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5">
+                Nombre
+              </label>
+              <input
+                name="nombre"
+                value={form.nombre}
+                onChange={handleChange}
+                required
+                placeholder="Juan"
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-800 focus:border-[#003366] focus:ring-2 focus:ring-[#003366]/20 outline-none transition-all"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5">
+                Apellido
+              </label>
+              <input
+                name="apellido"
+                value={form.apellido}
+                onChange={handleChange}
+                required
+                placeholder="García"
+                className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-800 focus:border-[#003366] focus:ring-2 focus:ring-[#003366]/20 outline-none transition-all"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5">
+              Email
+            </label>
+            <input
+              name="email"
+              type="email"
+              value={form.email}
+              onChange={handleChange}
+              required
+              placeholder="juan@email.com"
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-800 focus:border-[#003366] focus:ring-2 focus:ring-[#003366]/20 outline-none transition-all"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-1.5">
+              Teléfono
+            </label>
+            <input
+              name="telefono"
+              type="tel"
+              value={form.telefono}
+              onChange={handleChange}
+              required
+              placeholder="+54 9 11 1234-5678"
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-800 focus:border-[#003366] focus:ring-2 focus:ring-[#003366]/20 outline-none transition-all"
+            />
+          </div>
+
+          {error && (
+            <p className="text-red-600 text-sm font-bold bg-red-50 rounded-xl px-4 py-3 border border-red-100">
+              {error}
+            </p>
+          )}
+
+          <div className="flex gap-3 mt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 py-3.5 rounded-xl border border-slate-200 text-slate-600 font-black text-sm hover:bg-slate-50 transition-all"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="flex-1 py-3.5 rounded-xl bg-[#003366] text-white font-black text-sm hover:bg-blue-900 transition-all disabled:opacity-60 shadow-xl shadow-[#003366]/20"
+            >
+              {submitting ? "Enviando…" : "Consultar"}
+            </button>
+          </div>
+        </form>
+
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-all"
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2.5}
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default function ServiciosShow() {
   const { slug, idOrSlug, id } = useParams();
@@ -23,7 +195,9 @@ export default function ServiciosShow() {
   const [err, setErr] = useState(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
 
+  const { contact } = useCont();
   const token = localStorage.getItem("AUTH_TOKEN");
 
   useEffect(() => {
@@ -32,9 +206,12 @@ export default function ServiciosShow() {
       setLoading(true);
       setErr(null);
       try {
-        const { data } = await clienteAxios.get(`/api/servicios/${encodeURIComponent(param)}`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
+        const { data } = await clienteAxios.get(
+          `/api/servicios/${encodeURIComponent(param)}`,
+          {
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          },
+        );
         setServicio(data?.data ?? data ?? null);
       } catch (e) {
         console.error("Error cargando servicio:", e);
@@ -49,7 +226,11 @@ export default function ServiciosShow() {
   const tags = useMemo(() => {
     const t = servicio?.tags;
     if (Array.isArray(t)) return t;
-    if (typeof t === "string") return t.split(",").map((x) => x.trim()).filter(Boolean);
+    if (typeof t === "string")
+      return t
+        .split(",")
+        .map((x) => x.trim())
+        .filter(Boolean);
     return [];
   }, [servicio]);
 
@@ -90,9 +271,10 @@ export default function ServiciosShow() {
     return merged;
   }, [servicio]);
 
-
   const descripcion =
-    servicio?.description ?? servicio?.descripcion ?? "No hay descripcion detallada para este Paquete actualmente.";
+    servicio?.description ??
+    servicio?.descripcion ??
+    "No hay descripcion detallada para este Paquete actualmente.";
 
   // 📹 Video del producto
   const rawVideo = servicio?.video || null;
@@ -101,7 +283,7 @@ export default function ServiciosShow() {
 
   if (rawVideo) {
     const yid = rawVideo.match(
-      /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/
+      /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/,
     );
     if (yid && yid[7]?.length === 11) {
       videoUrl = `https://www.youtube.com/embed/${yid[7]}`;
@@ -119,12 +301,18 @@ export default function ServiciosShow() {
       "@type": "Offer",
       price: "0",
       priceCurrency: "ARS",
-      availability: "https://schema.org/InStock"
-    }
+      availability: "https://schema.org/InStock",
+    },
   };
 
   return (
     <section className="relative bg-white text-slate-900 overflow-hidden">
+      <ReservaModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        paqueteNombre={servicio?.title || ""}
+        whatsapp={contact?.whatsapp || ""}
+      />
       <SEOHead
         priority="high"
         title={`${servicio?.title || "Detalle"} | ${"Paquetes"} del Restaurante`}
@@ -141,9 +329,13 @@ export default function ServiciosShow() {
       {/* Breadcrumbs y Título */}
       <div className="max-w-7xl mx-auto px-6 pt-24 pb-12">
         <nav className="text-xs font-black uppercase tracking-widest text-[#003366]/60 mb-6 flex items-center gap-3">
-          <Link to="/" className="hover:text-[#003366] transition">Inicio</Link>
+          <Link to="/" className="hover:text-[#003366] transition">
+            Inicio
+          </Link>
           <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
-          <Link to="/servicios" className="hover:text-[#003366] transition">Paquetes</Link>
+          <Link to="/servicios" className="hover:text-[#003366] transition">
+            Paquetes
+          </Link>
           {servicio?.title && (
             <>
               <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
@@ -153,7 +345,8 @@ export default function ServiciosShow() {
         </nav>
 
         <h1 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-tight leading-tight text-slate-900 mb-8">
-          {servicio?.title || (loading ? "Buscando en el catalogo..." : "Paquete no encontrado")}
+          {servicio?.title ||
+            (loading ? "Buscando en el catalogo..." : "Paquete no encontrado")}
         </h1>
 
         {err && (
@@ -167,13 +360,14 @@ export default function ServiciosShow() {
       {!loading && servicio && gallery.length > 0 && (
         <div className="max-w-7xl mx-auto px-6 mb-20 overflow-hidden">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start flex-col-reverse flex w-full">
-
             {/* Izquierda: Info básica */}
             <div className="relative z-10">
               <div className="inline-block bg-[#003366] text-white text-[10px] font-black tracking-[0.2em] px-4 py-2 rounded-lg mb-6 uppercase">
                 Detalles del Paquete
               </div>
-              <h2 className="text-3xl font-black mb-8 text-slate-900 border-b border-slate-100 pb-4">Descripcion del Paquete</h2>
+              <h2 className="text-3xl font-black mb-8 text-slate-900 border-b border-slate-100 pb-4">
+                Descripcion del Paquete
+              </h2>
               <p className="text-xl leading-relaxed text-slate-600 font-light mb-10 whitespace-pre-line">
                 {descripcion}
               </p>
@@ -200,7 +394,7 @@ export default function ServiciosShow() {
                   navigation={true}
                   pagination={{
                     clickable: true,
-                    dynamicBullets: true
+                    dynamicBullets: true,
                   }}
                   autoplay={{ delay: 4000, disableOnInteraction: false }}
                   spaceBetween={0}
@@ -216,13 +410,17 @@ export default function ServiciosShow() {
                     1024: {
                       slidesPerView: 1,
                       spaceBetween: 0,
-                    }
+                    },
                   }}
-                  style={{ width: '100%', maxWidth: '100%' }}
+                  style={{ width: "100%", maxWidth: "100%" }}
                   className="rounded-2xl md:rounded-3xl shadow-2xl galeria-swiper-main w-full"
                 >
                   {gallery.map((url, i) => (
-                    <SwiperSlide key={i} className="rounded-2xl overflow-hidden w-full" style={{ width: '100%' }}>
+                    <SwiperSlide
+                      key={i}
+                      className="rounded-2xl overflow-hidden w-full"
+                      style={{ width: "100%" }}
+                    >
                       <div
                         className="relative aspect-[4/3] bg-white cursor-zoom-in overflow-hidden border border-slate-100 w-full"
                         onClick={() => {
@@ -233,7 +431,7 @@ export default function ServiciosShow() {
                         {isImageUrl(url) ? (
                           <img
                             src={url}
-                            alt={`${servicio?.title || 'Paquete'} - Vista ${i + 1}`}
+                            alt={`${servicio?.title || "Paquete"} - Vista ${i + 1}`}
                             className="object-cover w-full h-full hover:scale-110 transition-transform duration-1000"
                             loading="lazy"
                           />
@@ -263,12 +461,13 @@ export default function ServiciosShow() {
       {/* Características Técnicas + Video */}
       {!loading && servicio && (
         <div className="max-w-7xl mx-auto px-6 pb-24">
-
           <div className="grid lg:grid-cols-2 gap-12 items-center border-t border-slate-100 pt-20">
             {/* Features list */}
             {features.length > 0 && (
               <div>
-                <h3 className="text-3xl font-black text-[#003366] mb-10">Detalles del Paquete</h3>
+                <h3 className="text-3xl font-black text-[#003366] mb-10">
+                  Detalles del Paquete
+                </h3>
                 <div className="grid gap-6">
                   {features.map((f, i) => {
                     const title = typeof f === "string" ? f : f?.title;
@@ -285,7 +484,11 @@ export default function ServiciosShow() {
                           <h4 className="text-lg font-black text-slate-900">
                             {title}
                           </h4>
-                          {desc && <p className="text-slate-600 mt-2 font-medium">{desc}</p>}
+                          {desc && (
+                            <p className="text-slate-600 mt-2 font-medium">
+                              {desc}
+                            </p>
+                          )}
                         </div>
                       </div>
                     );
@@ -306,17 +509,20 @@ export default function ServiciosShow() {
               </div>
             ) : (
               <div className="bg-[#003366] rounded-[3rem] p-12 text-white flex flex-col justify-center h-full shadow-2xl">
-                <h4 className="text-3xl font-black mb-6 tracking-tight">Reserva tu paquete</h4>
+                <h4 className="text-3xl font-black mb-6 tracking-tight">
+                  Reserva tu paquete
+                </h4>
                 <p className="text-blue-100 text-lg mb-10 font-light leading-relaxed">
-                  Nuestro equipo esta listo para ayudarte a elegir el mejor momento para tu visita.
+                  Nuestro equipo esta listo para ayudarte a elegir el mejor
+                  momento para tu visita.
                 </p>
                 <div className="flex">
-                  <Link
-                    to="/contacto"
+                  <button
+                    onClick={() => setModalOpen(true)}
                     className="bg-white text-[#003366] font-black px-10 py-5 rounded-2xl shadow-xl hover:bg-slate-50 hover:scale-105 transition-all text-center uppercase tracking-widest"
                   >
                     🚀 Hacer una Reserva
-                  </Link>
+                  </button>
                 </div>
               </div>
             )}
@@ -325,12 +531,12 @@ export default function ServiciosShow() {
           {/* CTA Mobile / Desktop Final link if video exists */}
           {videoUrl && (
             <div className="text-center mt-20">
-              <Link
-                to="/contacto"
+              <button
+                onClick={() => setModalOpen(true)}
                 className="inline-flex items-center gap-4 bg-[#003366] text-white font-black px-12 py-5 rounded-2xl shadow-2xl hover:scale-105 hover:bg-blue-800 transition-all uppercase tracking-widest"
               >
                 🚀 Hacer una Reserva
-              </Link>
+              </button>
             </div>
           )}
         </div>
@@ -339,7 +545,9 @@ export default function ServiciosShow() {
       {/* SEO Schema */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdSchema, null, 2) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLdSchema, null, 2),
+        }}
       />
     </section>
   );

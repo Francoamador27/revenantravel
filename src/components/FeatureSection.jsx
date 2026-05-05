@@ -12,73 +12,93 @@ import WhatsappHref from '../utils/WhatsappUrl';
 // Componente separado que siempre renderiza Swiper para mantener consistencia de hooks
 function HeroSwiper({ slides, company, contact }) {
   return (
-    <Swiper
-      modules={[Autoplay, EffectFade, Pagination, Navigation]}
-      effect="fade"
-      fadeEffect={{ crossFade: true }}
-      autoplay={{
-        delay: 5000,
-        disableOnInteraction: false,
-      }}
-      pagination={{ clickable: true }}
-      navigation
-      loop={slides.length > 1}
-      className="hero-swiper w-full h-full"
-    >
-      {slides.map((slide, index) => (
-        <SwiperSlide key={slide.id} className="h-full">
-          <div className="relative w-full h-full flex items-center justify-center">
-            {slide.image ? (
-              <img
-                src={slide.image}
-                alt={slide.title || "Hero"}
-                className="absolute inset-0 w-full h-full object-cover"
-                loading={index === 0 ? "eager" : "lazy"}
-                decoding="async"
-                fetchPriority={index === 0 ? "high" : "auto"}
-              />
-            ) : null}
-            {/* Overlay con gradiente */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#003366]/80 via-black/40 to-black/30" />
+    <div className="relative w-full h-full">
+      <Swiper
+        modules={[Autoplay, EffectFade, Pagination, Navigation]}
+        effect="fade"
+        fadeEffect={{ crossFade: true }}
+        autoplay={{
+          delay: 5000,
+          disableOnInteraction: false,
+        }}
+        pagination={{ clickable: true, el: ".hero-pagination" }}
+        navigation={{
+          nextEl: ".hero-btn-next",
+          prevEl: ".hero-btn-prev",
+        }}
+        loop={slides.length > 1}
+        className="hero-swiper w-full h-full"
+      >
+        {slides.map((slide, index) => (
+          <SwiperSlide key={slide.id} className="h-full">
+            <div className="relative w-full h-full flex items-center justify-center">
+              {slide.image ? (
+                <img
+                  src={slide.image}
+                  alt={slide.title || "Hero"}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  loading={index === 0 ? "eager" : "lazy"}
+                  decoding="async"
+                  fetchPriority={index === 0 ? "high" : "auto"}
+                />
+              ) : null}
+              <div className="absolute inset-0 bg-gradient-to-t from-[#003366]/80 via-black/40 to-black/30" />
 
-            {/* Content */}
-            <div className="relative z-10 w-full max-w-6xl px-6 lg:px-12 mx-auto text-center">
-              <span className="inline-block mb-6 px-5 py-2 text-sm font-black tracking-wider bg-white/10 backdrop-blur-md text-white rounded-full border border-white/20 thea-amelia">
-                {company?.name || "RevenantTravel"}
-              </span>
+              <div className="relative z-10 w-full max-w-6xl px-6 lg:px-12 mx-auto text-center">
+                <span className="inline-block mb-6 px-5 py-2 text-sm font-black tracking-wider bg-white/10 backdrop-blur-md text-white rounded-full border border-white/20 thea-amelia">
+                  {company?.name || "RevenantTravel"}
+                </span>
 
-              <h1 className="text-3xl md:text-5xl lg:text-6xl font-black  text-white mb-8 leading-[1.1] tracking-tight">
-                {slide.title}
-              </h1>
+                <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-white mb-8 leading-[1.1] tracking-tight">
+                  {slide.title}
+                </h1>
 
-              <p className="max-w-2xl mx-auto text-xl md:text-2xl text-white/80 mb-12 font-light leading-relaxed">
-                {slide.description}
-              </p>
+                <p className="max-w-2xl mx-auto text-xl md:text-2xl text-white/80 mb-12 font-light leading-relaxed">
+                  {slide.description}
+                </p>
 
-              <div className="flex flex-wrap justify-center gap-6">
-                <a
-                  href={`tel:${contact?.phone || contact?.whatsapp || ""}`}
-                  className="px-10 py-5 font-black text-[#003366] bg-white rounded-2xl hover:bg-slate-100 transition-all shadow-xl hover:-translate-y-1 active:scale-95 text-lg"
-                >
-                  LLAMAR AHORA
-                </a>
+                <div className="flex flex-wrap justify-center gap-6">
+                  <a
+                    href={`tel:${contact?.phone || contact?.whatsapp || ""}`}
+                    className="px-10 py-5 font-black text-[#003366] bg-white rounded-2xl hover:bg-slate-100 transition-all shadow-xl hover:-translate-y-1 active:scale-95 text-lg"
+                  >
+                    LLAMAR AHORA
+                  </a>
 
-                <a
-                  href={WhatsappHref({
-                    message: `Hola, me interesa saber más sobre "${slide.title}". Quisiera pedir un presupuesto.`,
-                  })}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-10 py-5 font-black text-white border-2 border-white/60 rounded-2xl hover:bg-white/10 backdrop-blur-sm transition-all text-lg"
-                >
-                  WHATSAPP
-                </a>
+                  <a
+                    href={WhatsappHref({
+                      message: `Hola, me interesa saber más sobre "${slide.title}". Quisiera pedir un presupuesto.`,
+                    })}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-10 py-5 font-black text-white border-2 border-white/60 rounded-2xl hover:bg-white/10 backdrop-blur-sm transition-all text-lg"
+                  >
+                    WHATSAPP
+                  </a>
+                </div>
               </div>
             </div>
-          </div>
-        </SwiperSlide>
-      ))}
-    </Swiper>
+          </SwiperSlide>
+        ))}
+      </Swiper>
+
+      {/* Botón Prev */}
+      <button className="hero-btn-prev absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 z-20 group w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white transition-all duration-300 hover:bg-white/25 hover:border-white/50 hover:scale-110 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed shadow-lg">
+        <svg className="w-5 h-5 lg:w-6 lg:h-6 transition-transform duration-300 group-hover:-translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+
+      {/* Botón Next */}
+      <button className="hero-btn-next absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 z-20 group w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white transition-all duration-300 hover:bg-white/25 hover:border-white/50 hover:scale-110 active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed shadow-lg">
+        <svg className="w-5 h-5 lg:w-6 lg:h-6 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+
+      {/* Paginación personalizada */}
+      <div className="hero-pagination absolute bottom-6 left-0 right-0 z-20 flex justify-center gap-2" />
+    </div>
   );
 }
 
@@ -170,39 +190,20 @@ export default function HeroFeatures() {
           height: 100% !important;
         }
 
-        .hero-swiper .swiper-button-next,
-        .hero-swiper .swiper-button-prev {
-          color: white;
-          width: 48px;
-          height: 48px;
-          background: rgba(0,0,0,.45);
+        .hero-pagination .swiper-pagination-bullet {
+          width: 8px;
+          height: 8px;
+          background: rgba(255,255,255,0.5);
           border-radius: 9999px;
-          transition: all .25s ease;
-        }
-
-        .hero-swiper .swiper-button-next:hover,
-        .hero-swiper .swiper-button-prev:hover {
-          background: rgba(0,0,0,.7);
-          transform: scale(1.05);
-        }
-
-        .hero-swiper .swiper-button-next::after,
-        .hero-swiper .swiper-button-prev::after {
-          font-size: 20px;
-          font-weight: bold;
-        }
-
-        .hero-swiper .swiper-pagination-bullet {
-          background: white;
-          opacity: 0.5;
-        }
-
-        .hero-swiper .swiper-pagination-bullet-active {
-          background: #003366;
           opacity: 1;
-          width: 12px;
-          border-radius: 6px;
-          transition: width 0.3s;
+          transition: all 0.35s ease;
+          cursor: pointer;
+        }
+
+        .hero-pagination .swiper-pagination-bullet-active {
+          background: white;
+          width: 28px;
+          border-radius: 9999px;
         }
       `}</style>
 

@@ -181,7 +181,7 @@ export default function ServiciosSwiper() {
           </h3>
 
           {/* CTA hover */}
-          <div className="flex items-center gap-3 opacity-0 transform translate-y-4 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
+          <div className="flex items-center gap-3">
             <span className="text-sm font-bold tracking-tight uppercase text-white">
               Ver detalles del paquete
             </span>

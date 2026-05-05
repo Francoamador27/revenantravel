@@ -156,7 +156,7 @@ export default function DestinosCarrusel() {
                         )}
 
                         {/* CTA */}
-                        <div className="flex items-center gap-3 opacity-80 transform transition-all duration-500 group-hover:opacity-100 group-hover:translate-x-2">
+                        <div className="flex items-center gap-3">
                           <span className="text-sm font-bold tracking-tight uppercase text-white">
                             Explorar destino
                           </span>
